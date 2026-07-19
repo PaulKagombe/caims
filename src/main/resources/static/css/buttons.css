@@ -1,0 +1,114 @@
+/* =====================================================
+   BUTTON SYSTEM
+   CAIMS Enterprise UI
+===================================================== */
+
+.btn{
+
+    border-radius: var(--radius);
+
+    font-weight: 500;
+
+    padding: .6rem 1.2rem;
+
+    transition: all .25s ease;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .5rem;
+
+    border: none;
+
+}
+
+.btn:hover{
+
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow);
+
+}
+
+/* Primary */
+
+.btn-primary{
+
+    background: var(--primary);
+
+    color: white;
+
+}
+
+.btn-primary:hover{
+
+    background: var(--primary-dark);
+
+}
+
+/* Secondary */
+
+.btn-secondary{
+
+    background: #6c757d;
+
+    color: white;
+
+}
+
+.btn-secondary:hover{
+
+    background: #5c636a;
+
+}
+
+/* Success */
+
+.btn-success{
+
+    background: var(--success);
+
+    color: white;
+
+}
+
+/* Warning */
+
+.btn-warning{
+
+    background: var(--warning);
+
+    color: white;
+
+}
+
+/* Danger */
+
+.btn-danger{
+
+    background: var(--danger);
+
+    color: white;
+
+}
+
+/* Outline */
+
+.btn-outline-primary{
+
+    border:2px solid var(--primary);
+
+    color:var(--primary);
+
+    background:white;
+
+}
+
+.btn-outline-primary:hover{
+
+    background:var(--primary);
+
+    color:white;
+
+}

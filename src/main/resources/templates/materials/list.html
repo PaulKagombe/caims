@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Material Management | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <!-- ================= PAGE HEADER ================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>Material Management</h1>
+
+                <p class="page-subtitle">
+                    Manage inventory items (materials) and their stock levels.
+                </p>
+
+            </div>
+
+            <a th:href="@{/materials/new}" class="btn btn-primary">
+
+                <i class="bi bi-plus-circle"></i>
+
+                Add Material
+
+            </a>
+
+        </div>
+
+        <!-- Success Message -->
+
+        <div th:if="${success}"
+             class="alert alert-success alert-dismissible fade show">
+
+            <span th:text="${success}"></span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"></button>
+
+        </div>
+
+        <!-- Error Message -->
+
+        <div th:if="${error}"
+             class="alert alert-danger alert-dismissible fade show">
+
+            <span th:text="${error}"></span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"></button>
+
+        </div>
+
+        <!-- Search + Category Filter -->
+
+        <div class="search-container">
+
+            <form th:action="@{/materials}" method="get">
+
+                <input
+                        type="text"
+                        name="keyword"
+                        class="form-control"
+                        placeholder="Search materials..."
+                        th:value="${keyword}">
+
+                <select name="categoryId" class="form-control" style="max-width:220px;">
+                    <option value="">All Categories</option>
+                    <option th:each="c : ${categories}"
+                            th:value="${c.id}"
+                            th:text="${c.name}"
+                            th:selected="${categoryId != null and categoryId == c.id}">
+                    </option>
+                </select>
+
+                <button class="btn btn-primary">
+
+                    <i class="bi bi-search"></i>
+
+                    Search
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Materials Table -->
+
+        <div class="table-card">
+
+            <table class="table">
+
+                <thead>
+
+                <tr>
+
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Unit</th>
+                    <th>Unit Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th width="150">Actions</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="material : ${materials}">
+
+                    <td th:text="${material.code}"></td>
+
+                    <td th:text="${material.name}"></td>
+
+                    <td th:text="${material.category != null ? material.category.name : '—'}"></td>
+
+                    <td th:text="${material.unit}"></td>
+
+                    <td th:text="${'KES ' + #numbers.formatDecimal(material.unitPrice, 1, 2)}"></td>
+
+                    <td>
+
+                        <span th:text="${material.currentStock}"></span>
+
+                        <span th:if="${material.lowStock}"
+                              class="badge badge-inactive ms-1"
+                              title="At or below reorder level">
+
+                            Low
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <span th:if="${material.active}"
+                              class="badge badge-active">
+
+                            Active
+
+                        </span>
+
+                        <span th:unless="${material.active}"
+                              class="badge badge-inactive">
+
+                            Inactive
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <a th:href="@{/materials/edit/{id}(id=${material.id})}"
+                           class="btn btn-warning btn-sm">
+
+                            <i class="bi bi-pencil-square"></i>
+
+                        </a>
+
+                        <form th:action="@{/materials/delete/{id}(id=${material.id})}"
+                              method="post"
+                              class="d-inline"
+                              onsubmit="return confirm('Deactivate this material?')">
+
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(materials)}">
+
+                    <td colspan="8">
+
+                        <div class="empty-state">
+
+                            <i class="bi bi-box-seam empty-state-icon"></i>
+
+                            <h4>No Materials Found</h4>
+
+                            <p>Add your first material to get started.</p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+            <!-- Pagination -->
+
+            <nav th:if="${materialPage.totalPages > 1}" aria-label="Material pagination">
+
+                <ul class="pagination justify-content-center mt-3">
+
+                    <li class="page-item"
+                        th:classappend="${materialPage.first} ? 'disabled'">
+
+                        <a class="page-link"
+                           th:href="@{/materials(keyword=${keyword}, categoryId=${categoryId}, page=${materialPage.number - 1})}">
+
+                            Previous
+
+                        </a>
+
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, materialPage.totalPages - 1)}"
+                        th:classappend="${i == materialPage.number} ? 'active'">
+
+                        <a class="page-link"
+                           th:href="@{/materials(keyword=${keyword}, categoryId=${categoryId}, page=${i})}"
+                           th:text="${i + 1}">
+
+                        </a>
+
+                    </li>
+
+                    <li class="page-item"
+                        th:classappend="${materialPage.last} ? 'disabled'">
+
+                        <a class="page-link"
+                           th:href="@{/materials(keyword=${keyword}, categoryId=${categoryId}, page=${materialPage.number + 1})}">
+
+                            Next
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </nav>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

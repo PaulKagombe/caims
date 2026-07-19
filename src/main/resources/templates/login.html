@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>CAIMS Login</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<div class="container">
+
+    <div class="row justify-content-center mt-5">
+
+        <div class="col-md-5">
+
+            <div class="card shadow">
+
+                <div class="card-header text-center bg-primary text-white">
+
+                    <h3>County Assembly</h3>
+
+                    <h5>Inventory Management System</h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Error Message -->
+                    <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Login Failed!</strong> Invalid username or password.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Logout Message -->
+                    <div th:if="${param.logout != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        You have logged out successfully.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <form th:action="@{/login}" method="post" name="loginForm">
+
+                        <!-- Username -->
+                        <div class="mb-3">
+
+                            <label for="username" class="form-label">
+                                Username
+                            </label>
+
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    required
+                                    autofocus>
+
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+
+                            <label for="password" class="form-label">
+                                Password
+                            </label>
+
+                            <input
+                                    class="form-control"
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    required>
+
+
+                        </div>
+
+                        <button
+                                class="btn btn-primary w-100"
+                                type="submit">
+
+                            Login
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

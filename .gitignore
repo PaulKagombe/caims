@@ -1,0 +1,14 @@
+target/ 
+.idea/ 
+*.iml 
+.vscode/ 
+.settings/ 
+.classpath 
+.project 
+logs/ 
+*.log
+
+application-prod.properties 
+application-prod.properties 
+.ds_store
+.thumbs_db

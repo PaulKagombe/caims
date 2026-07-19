@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Dashboard | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <!-- Page Title -->
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h2 class="dashboard-title">
+
+                Dashboard
+
+            </h2>
+
+            <span class="badge-soft">
+
+                Welcome,
+                <span sec:authentication="name"></span>
+
+            </span>
+
+        </div>
+
+        <!-- Error Message (e.g. surfaced by the global exception handler) -->
+
+        <div th:if="${error}"
+             class="alert alert-danger alert-dismissible fade show">
+
+            <span th:text="${error}"></span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"></button>
+
+        </div>
+
+        <div th:switch="${roleName}">
+
+            <!-- ================================================
+                 ADMIN — the only role that gets the full,
+                 system-wide overview across every module.
+                 ================================================ -->
+            <div th:case="'ADMIN'">
+
+                <div class="row g-4">
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card dashboard-card bg-primary">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Materials</h6>
+                                    <h2 th:text="${materialCount}">0</h2>
+                                </div>
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card dashboard-card bg-success">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Categories</h6>
+                                    <h2 th:text="${categoryCount}">0</h2>
+                                </div>
+                                <i class="bi bi-tags"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card dashboard-card bg-warning">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Suppliers</h6>
+                                    <h2 th:text="${supplierCount}">0</h2>
+                                </div>
+                                <i class="bi bi-truck"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card dashboard-card bg-info">
+                            <div class="card-body">
+                                <div>
+                                    <h6>System Users</h6>
+                                    <h2 th:text="${userCount}">0</h2>
+                                </div>
+                                <i class="bi bi-people"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mt-4">
+
+                    <div class="col-lg-8">
+                        <div class="card activity-card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/categories/new}" class="btn btn-primary w-100">
+                                            <i class="bi bi-plus-circle"></i>
+                                            Category
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/users/new}" class="btn btn-info text-white w-100">
+                                            <i class="bi bi-person-plus"></i>
+                                            Add User
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/purchase-orders/new}" class="btn btn-success w-100">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                            New Order
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/suppliers/new}" class="btn btn-warning w-100">
+                                            <i class="bi bi-truck"></i>
+                                            Supplier
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card activity-card">
+                            <div class="card-header">System Overview</div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                        System running normally
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-people-fill text-primary"></i>
+                                        <span th:text="${userCount}">0</span> registered user accounts
+                                    </li>
+                                    <li class="list-group-item" th:if="${lowStockCount > 0}">
+                                        <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                                        <span th:text="${lowStockCount}">0</span> material(s) at or below reorder level —
+                                        <a th:href="@{/materials}">review stock</a>
+                                    </li>
+                                    <li class="list-group-item" th:if="${pendingPurchaseOrders > 0 or pendingStockRequests > 0}">
+                                        <i class="bi bi-hourglass-split text-info"></i>
+                                        <span th:text="${pendingPurchaseOrders + pendingStockRequests}">0</span> item(s) awaiting Procurement approval —
+                                        <a th:href="@{/purchase-orders}">review</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a th:href="@{/users}">
+                                            <i class="bi bi-person-gear"></i>
+                                            Manage users &amp; roles
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card welcome-card mt-4">
+                    <div class="card-body">
+                        <h4>Welcome to CAIMS</h4>
+                        <p>
+                            As System Administrator, you have full visibility into every module and
+                            can manage user accounts, roles, and access across the system.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================================================
+                 STOREKEEPER — inventory-facing view only.
+                 ================================================ -->
+            <div th:case="'STOREKEEPER'">
+
+                <div class="row g-4">
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-success">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Categories</h6>
+                                    <h2 th:text="${categoryCount}">0</h2>
+                                </div>
+                                <i class="bi bi-tags"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-primary">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Materials</h6>
+                                    <h2 th:text="${materialCount}">0</h2>
+                                </div>
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-warning">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Low Stock</h6>
+                                    <h2 th:text="${lowStockCount}">0</h2>
+                                </div>
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row g-4 mt-1">
+
+                    <div class="col-lg-6 col-md-6">
+                        <div class="card dashboard-card bg-info">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Awaiting Receipt</h6>
+                                    <h2 th:text="${awaitingReceipt}">0</h2>
+                                </div>
+                                <i class="bi bi-box-arrow-in-down"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6">
+                        <div class="card dashboard-card bg-primary">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Awaiting Issue</h6>
+                                    <h2 th:text="${awaitingIssue}">0</h2>
+                                </div>
+                                <i class="bi bi-box-arrow-up"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-lg-8">
+                        <div class="card activity-card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/materials/new}" class="btn btn-primary w-100">
+                                            <i class="bi bi-plus-circle"></i>
+                                            Material
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/categories}" class="btn btn-outline-primary w-100">
+                                            <i class="bi bi-tags"></i>
+                                            Categories
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/stock-in}" class="btn btn-success w-100">
+                                            <i class="bi bi-box-arrow-in-down"></i>
+                                            Stock In
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/stock-out}" class="btn btn-warning w-100">
+                                            <i class="bi bi-box-arrow-up"></i>
+                                            Stock Out
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card welcome-card mt-4">
+                    <div class="card-body">
+                        <h4>Welcome, Storekeeper</h4>
+                        <p>
+                            Manage materials and categories, receive stock against approved purchase
+                            orders, and issue stock against approved department requests.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================================================
+                 PROCUREMENT_OFFICER — supplier/PO-facing view.
+                 ================================================ -->
+            <div th:case="'PROCUREMENT_OFFICER'">
+
+                <div class="row g-4">
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-warning">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Suppliers</h6>
+                                    <h2 th:text="${supplierCount}">0</h2>
+                                </div>
+                                <i class="bi bi-truck"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-info">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Pending Purchase Orders</h6>
+                                    <h2 th:text="${pendingPurchaseOrders}">0</h2>
+                                </div>
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-primary">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Pending Stock Requests</h6>
+                                    <h2 th:text="${pendingStockRequests}">0</h2>
+                                </div>
+                                <i class="bi bi-clipboard-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-lg-8">
+                        <div class="card activity-card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+
+                                    <div class="col-md-4">
+                                        <a th:href="@{/suppliers}" class="btn btn-warning w-100">
+                                            <i class="bi bi-truck"></i>
+                                            Suppliers
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <a th:href="@{/purchase-orders/new}" class="btn btn-primary w-100">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                            New Purchase Order
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <a th:href="@{/purchase-orders}" class="btn btn-outline-primary w-100">
+                                            <i class="bi bi-clipboard-check"></i>
+                                            Review Approvals
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card welcome-card mt-4">
+                    <div class="card-body">
+                        <h4>Welcome, Procurement Officer</h4>
+                        <p>
+                            Order stock from suppliers and approve or reject purchase orders and
+                            department stock requests before the storekeeper acts on them.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================================================
+                 AUDITOR — read-only summary, no action buttons.
+                 ================================================ -->
+            <div th:case="'AUDITOR'">
+
+                <div class="card activity-card mt-2">
+                    <div class="card-header">
+                        <h5 class="mb-0">Read-Only Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-0">
+                            Detailed audit reports will appear here once the Reports module is
+                            enabled. As an auditor, your access across CAIMS is view-only.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================================================
+                 Default (MEMBER and any other role) — minimal view.
+                 ================================================ -->
+            <div th:case="*">
+
+                <div class="card welcome-card mt-2">
+                    <div class="card-body">
+                        <h4>Welcome to CAIMS</h4>
+                        <p>
+                            Once the request module is enabled, you'll be able to request and
+                            track items on behalf of your department from here.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

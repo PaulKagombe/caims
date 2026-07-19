@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="sidebar">
+
+    <aside class="sidebar">
+
+        <!-- ================= USER PROFILE ================= -->
+
+        <div class="sidebar-user">
+
+            <div class="user-avatar">
+                <i class="bi bi-person-fill"></i>
+            </div>
+
+            <h5 sec:authentication="name"></h5>
+
+            <p th:text="${#strings.replace(#authentication.principal.user.role.name, '_', ' ')}">System Administrator</p>
+
+            <div class="user-status">
+                <span class="status-dot"></span>
+                <span>Online</span>
+            </div>
+
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <!-- ================= MAIN ================= -->
+
+            <div class="sidebar-group"
+                 th:classappend="${activePage == 'dashboard'} ? 'open'">
+
+                <button type="button" class="sidebar-section-toggle" data-target="group-main">
+                    <span>MAIN</span>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </button>
+
+                <ul class="sidebar-menu" id="group-main">
+
+                    <li>
+                        <a th:href="@{/dashboard}"
+                           th:classappend="${activePage == 'dashboard'} ? 'active'">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <!-- ================= INVENTORY ================= -->
+
+            <div class="sidebar-group"
+                 th:classappend="${activePage == 'categories' or activePage == 'materials' or activePage == 'stockIn' or activePage == 'stockOut'} ? 'open'">
+
+                <button type="button" class="sidebar-section-toggle" data-target="group-inventory">
+                    <span>INVENTORY</span>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </button>
+
+                <ul class="sidebar-menu" id="group-inventory">
+
+                    <li>
+                        <a th:href="@{/categories}"
+                           th:classappend="${activePage == 'categories'} ? 'active'">
+                            <i class="bi bi-tags"></i>
+                            <span>Categories</span>
+                        </a>
+                    </li>
+
+                    <li sec:authorize="hasAnyRole('ADMIN','STOREKEEPER')">
+                        <a th:href="@{/materials}"
+                           th:classappend="${activePage == 'materials'} ? 'active'">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Materials</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a th:href="@{/stock-in}"
+                           th:classappend="${activePage == 'stockIn'} ? 'active'">
+                            <i class="bi bi-box-arrow-in-down"></i>
+                            <span>Stock In</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a th:href="@{/stock-out}"
+                           th:classappend="${activePage == 'stockOut'} ? 'active'">
+                            <i class="bi bi-box-arrow-up"></i>
+                            <span>Stock Out</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <!-- ================= PROCUREMENT ================= -->
+
+            <div class="sidebar-group"
+                 th:classappend="${activePage == 'suppliers' or activePage == 'purchaseOrders'} ? 'open'">
+
+                <button type="button" class="sidebar-section-toggle" data-target="group-procurement">
+                    <span>PROCUREMENT</span>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </button>
+
+                <ul class="sidebar-menu" id="group-procurement">
+
+                    <li>
+                        <a th:href="@{/suppliers}"
+                           th:classappend="${activePage == 'suppliers'} ? 'active'">
+                            <i class="bi bi-truck"></i>
+                            <span>Suppliers</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a th:href="@{/purchase-orders}"
+                           th:classappend="${activePage == 'purchaseOrders'} ? 'active'">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span>Purchase Orders</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <!-- ================= ADMINISTRATION ================= -->
+
+            <div class="sidebar-group"
+                 th:classappend="${activePage == 'departments' or activePage == 'members' or activePage == 'users'} ? 'open'">
+
+                <button type="button" class="sidebar-section-toggle" data-target="group-administration">
+                    <span>ADMINISTRATION</span>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </button>
+
+                <ul class="sidebar-menu" id="group-administration">
+
+                    <li>
+                        <a th:href="@{/departments}"
+                           th:classappend="${activePage == 'departments'} ? 'active'">
+                            <i class="bi bi-building"></i>
+                            <span>Departments</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a th:href="@{/members}"
+                           th:classappend="${activePage == 'members'} ? 'active'">
+                            <i class="bi bi-people"></i>
+                            <span>Members</span>
+                        </a>
+                    </li>
+
+                    <li sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/users}"
+                           th:classappend="${activePage == 'users'} ? 'active'">
+                            <i class="bi bi-person-gear"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <!-- ================= REPORTS ================= -->
+
+            <div class="sidebar-group"
+                 th:classappend="${activePage == 'reports'} ? 'open'">
+
+                <button type="button" class="sidebar-section-toggle" data-target="group-reports">
+                    <span>REPORTS</span>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </button>
+
+                <ul class="sidebar-menu" id="group-reports">
+
+                    <li>
+                        <a th:href="@{/reports}"
+                           th:classappend="${activePage == 'reports'} ? 'active'">
+                            <i class="bi bi-bar-chart-line"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <!-- ================= SETTINGS ================= -->
+
+            <div class="sidebar-group"
+                 th:classappend="${activePage == 'settings'} ? 'open'">
+
+                <button type="button" class="sidebar-section-toggle" data-target="group-settings">
+                    <span>SETTINGS</span>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </button>
+
+                <ul class="sidebar-menu" id="group-settings">
+
+                    <li>
+                        <a th:href="@{/settings}"
+                           th:classappend="${activePage == 'settings'} ? 'active'">
+                            <i class="bi bi-gear"></i>
+                            <span>System Settings</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </nav>
+
+        <!-- ================= FOOTER ================= -->
+
+        <div class="sidebar-footer">
+
+            <form th:action="@{/logout}" method="post">
+
+                <button type="submit" class="logout-btn">
+
+                    <i class="bi bi-box-arrow-right"></i>
+
+                    Logout
+
+                </button>
+
+            </form>
+
+            <small>
+                CAIMS v1.0
+            </small>
+
+        </div>
+
+    </aside>
+
+</div>
+
+</html>
