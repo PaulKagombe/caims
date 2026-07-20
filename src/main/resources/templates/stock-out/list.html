@@ -14,11 +14,11 @@
         <div class="page-header">
             <div>
                 <h1>Stock Out</h1>
-                <p class="page-subtitle">Log department requests and issue approved stock.</p>
+                <p class="page-subtitle">Record items collected from the store.</p>
             </div>
-            <a th:href="@{/stock-out/new-request}" class="btn btn-primary">
+            <a th:href="@{/stock-out/new}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i>
-                Log Request
+                Log Issue
             </a>
         </div>
 
@@ -32,79 +32,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
-        <!-- ================= APPROVED — READY TO ISSUE ================= -->
-
-        <div class="table-card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Approved — Ready to Issue</h5>
-            </div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Material</th>
-                    <th>Department</th>
-                    <th>Requester</th>
-                    <th>Quantity</th>
-                    <th width="320">Issue</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="r : ${approvedRequests}">
-                    <td th:text="${r.material.code + ' — ' + r.material.name}"></td>
-                    <td th:text="${r.department.name}"></td>
-                    <td th:text="${r.requesterName}"></td>
-                    <td th:text="${r.quantity + ' ' + r.material.unit}"></td>
-                    <td>
-                        <form th:action="@{/stock-out/issue/{id}(id=${r.id})}" method="post"
-                              class="d-flex gap-2"
-                              onsubmit="return confirm('Confirm issuing ' + '[[${r.quantity}]]' + ' [[${r.material.unit}]] of [[${r.material.name}]] to [[${r.department.name}]]?')">
-                            <input type="text" name="notes" class="form-control form-control-sm"
-                                   placeholder="Notes (optional)">
-                            <button type="submit" class="btn btn-success btn-sm text-nowrap">
-                                <i class="bi bi-box-arrow-up"></i> Issue
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(approvedRequests)}">
-                    <td colspan="5" class="text-center text-muted py-3">Nothing approved and ready to issue.</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ================= PENDING (AWAITING PROCUREMENT) ================= -->
-
-        <div class="table-card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Awaiting Procurement Approval</h5>
-            </div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Material</th>
-                    <th>Department</th>
-                    <th>Requester</th>
-                    <th>Quantity</th>
-                    <th>Logged By</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="r : ${pendingRequests}">
-                    <td th:text="${r.material.name}"></td>
-                    <td th:text="${r.department.name}"></td>
-                    <td th:text="${r.requesterName}"></td>
-                    <td th:text="${r.quantity + ' ' + r.material.unit}"></td>
-                    <td th:text="${r.loggedBy != null ? r.loggedBy.username : '—'}"></td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(pendingRequests)}">
-                    <td colspan="5" class="text-center text-muted py-3">No requests awaiting approval.</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ================= HISTORY (AUDIT TRAIL) ================= -->
+        <!-- ================= ISSUE HISTORY (AUDIT TRAIL) ================= -->
 
         <div class="table-card">
             <div class="card-header">
@@ -117,21 +45,29 @@
                     <th>Material</th>
                     <th>Department</th>
                     <th>Requester</th>
-                    <th>Quantity Issued</th>
+                    <th>Quantity</th>
                     <th>Issued By</th>
+                    <th>Notes</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="h : ${history}">
-                    <td th:text="${#temporals.format(h.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
-                    <td th:text="${h.stockRequest.material.name}"></td>
-                    <td th:text="${h.stockRequest.department.name}"></td>
-                    <td th:text="${h.stockRequest.requesterName}"></td>
-                    <td th:text="${h.quantityIssued + ' ' + h.stockRequest.material.unit}"></td>
-                    <td th:text="${h.issuedBy != null ? h.issuedBy.username : '—'}"></td>
+                <tr th:each="s : ${history}">
+                    <td th:text="${#temporals.format(s.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
+                    <td th:text="${s.material.code + ' — ' + s.material.name}"></td>
+                    <td th:text="${s.department.name}"></td>
+                    <td th:text="${s.requesterName}"></td>
+                    <td th:text="${s.quantity + ' ' + s.material.unit}"></td>
+                    <td th:text="${s.issuedBy != null ? s.issuedBy.username : '—'}"></td>
+                    <td th:text="${s.notes}"></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(history)}">
-                    <td colspan="6" class="text-center text-muted py-3">No stock has been issued yet.</td>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-box-arrow-up empty-state-icon"></i>
+                            <h4>No Stock Issued Yet</h4>
+                            <p>Log an issue to record an item leaving the store.</p>
+                        </div>
+                    </td>
                 </tr>
                 </tbody>
             </table>

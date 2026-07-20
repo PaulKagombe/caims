@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/layout :: head(~{::title})}">
-    <title>Log Stock Request | CAIMS</title>
+    <title>Log Stock Issue | CAIMS</title>
 </head>
 
 <body>
@@ -13,7 +13,7 @@
         <div class="container mt-5">
             <div class="card shadow">
                 <div class="card-header">
-                    <h3>Log Stock Request</h3>
+                    <h3>Log Stock Issue</h3>
                 </div>
                 <div class="card-body">
 
@@ -31,7 +31,7 @@
                         <div id="barcodeStatus" class="form-text"></div>
                     </div>
 
-                    <form th:action="@{/stock-out/request/save}" th:object="${stockRequest}" method="post">
+                    <form th:action="@{/stock-out/save}" th:object="${stockOut}" method="post">
 
                         <div class="row">
 
@@ -86,8 +86,8 @@
                         </div>
 
                         <button class="btn btn-primary">
-                            <i class="bi bi-save"></i>
-                            Submit for Approval
+                            <i class="bi bi-box-arrow-up"></i>
+                            Issue Stock
                         </button>
                         <a th:href="@{/stock-out}" class="btn btn-secondary">Cancel</a>
 

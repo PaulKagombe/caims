@@ -2,7 +2,6 @@ package com.countyassembly.caims.PurchaseOrder;
 
 import com.countyassembly.caims.material.MaterialService;
 import com.countyassembly.caims.security.CustomUserDetails;
-import com.countyassembly.caims.StockRequest.StockRequestService;
 import com.countyassembly.caims.supplier.SupplierService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ public class PurchaseOrderController {
     private static final Logger log = LoggerFactory.getLogger(PurchaseOrderController.class);
 
     private final PurchaseOrderService purchaseOrderService;
-    private final StockRequestService stockRequestService;
     private final MaterialService materialService;
     private final SupplierService supplierService;
 
@@ -31,7 +29,6 @@ public class PurchaseOrderController {
     public String list(Model model) {
 
         model.addAttribute("orders", purchaseOrderService.findAll());
-        model.addAttribute("pendingStockRequests", stockRequestService.findPending());
         model.addAttribute("activePage", "purchaseOrders");
 
         return "purchase-orders/list";
@@ -108,38 +105,6 @@ public class PurchaseOrderController {
         try {
             purchaseOrderService.reject(id, principal.getUser());
             redirectAttributes.addFlashAttribute("success", "Purchase order rejected.");
-        } catch (IllegalStateException ex) {
-            redirectAttributes.addFlashAttribute("error", ex.getMessage());
-        }
-
-        return "redirect:/purchase-orders";
-    }
-
-    @PostMapping("/stock-requests/approve/{id}")
-    public String approveStockRequest(
-            @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails principal,
-            RedirectAttributes redirectAttributes) {
-
-        try {
-            stockRequestService.approve(id, principal.getUser());
-            redirectAttributes.addFlashAttribute("success", "Stock request approved.");
-        } catch (IllegalStateException ex) {
-            redirectAttributes.addFlashAttribute("error", ex.getMessage());
-        }
-
-        return "redirect:/purchase-orders";
-    }
-
-    @PostMapping("/stock-requests/reject/{id}")
-    public String rejectStockRequest(
-            @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails principal,
-            RedirectAttributes redirectAttributes) {
-
-        try {
-            stockRequestService.reject(id, principal.getUser());
-            redirectAttributes.addFlashAttribute("success", "Stock request rejected.");
         } catch (IllegalStateException ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }

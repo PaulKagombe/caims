@@ -1,9 +1,10 @@
 package com.countyassembly.caims.stockout;
 
 import com.countyassembly.caims.common.entity.ResourceNotFoundException;
+import com.countyassembly.caims.department.Department;
+import com.countyassembly.caims.department.DepartmentService;
+import com.countyassembly.caims.material.Material;
 import com.countyassembly.caims.material.MaterialService;
-import com.countyassembly.caims.StockRequest.StockRequest;
-import com.countyassembly.caims.StockRequest.StockRequestService;
 import com.countyassembly.caims.user.SystemUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,33 +12,37 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * ============================================================
+ * StockOut Service
+ * ============================================================
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class StockOutService {
 
     private final StockOutRepository stockOutRepository;
-    private final StockRequestService stockRequestService;
     private final MaterialService materialService;
+    private final DepartmentService departmentService;
 
-    public StockOut issue(Long stockRequestId, String notes, SystemUser issuedBy) {
+    public StockOut issue(
+            StockOut stockOut,
+            Long materialId,
+            Long departmentId,
+            SystemUser issuedBy) {
 
-        StockRequest request = stockRequestService.findById(stockRequestId);
+        Material material = materialService.findById(materialId);
+        Department department = departmentService.findById(departmentId);
 
-        // markIssued() guards that the request is APPROVED, and
-        // decreaseStock() guards against taking stock negative —
-        // both throw IllegalStateException, checked before saving
-        // the audit record so nothing is recorded halfway.
-        stockRequestService.markIssued(stockRequestId);
+        // decreaseStock() guards against taking stock negative — throws
+        // before anything is saved, so a failed issue never gets
+        // recorded halfway.
+        materialService.decreaseStock(materialId, stockOut.getQuantity());
 
-        materialService.decreaseStock(request.getMaterial().getId(), request.getQuantity());
-
-        StockOut stockOut = StockOut.builder()
-                .stockRequest(request)
-                .quantityIssued(request.getQuantity())
-                .notes(notes)
-                .issuedBy(issuedBy)
-                .build();
+        stockOut.setMaterial(material);
+        stockOut.setDepartment(department);
+        stockOut.setIssuedBy(issuedBy);
 
         return stockOutRepository.save(stockOut);
     }

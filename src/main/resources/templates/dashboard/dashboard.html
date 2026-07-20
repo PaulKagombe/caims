@@ -165,9 +165,9 @@
                                         <span th:text="${lowStockCount}">0</span> material(s) at or below reorder level —
                                         <a th:href="@{/materials}">review stock</a>
                                     </li>
-                                    <li class="list-group-item" th:if="${pendingPurchaseOrders > 0 or pendingStockRequests > 0}">
+                                    <li class="list-group-item" th:if="${pendingPurchaseOrders > 0}">
                                         <i class="bi bi-hourglass-split text-info"></i>
-                                        <span th:text="${pendingPurchaseOrders + pendingStockRequests}">0</span> item(s) awaiting Procurement approval —
+                                        <span th:text="${pendingPurchaseOrders}">0</span> purchase order(s) awaiting Procurement approval —
                                         <a th:href="@{/purchase-orders}">review</a>
                                     </li>
                                     <li class="list-group-item">
@@ -250,18 +250,6 @@
                                     <h2 th:text="${awaitingReceipt}">0</h2>
                                 </div>
                                 <i class="bi bi-box-arrow-in-down"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 col-md-6">
-                        <div class="card dashboard-card bg-primary">
-                            <div class="card-body">
-                                <div>
-                                    <h6>Awaiting Issue</h6>
-                                    <h2 th:text="${awaitingIssue}">0</h2>
-                                </div>
-                                <i class="bi bi-box-arrow-up"></i>
                             </div>
                         </div>
                     </div>
@@ -354,18 +342,6 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card dashboard-card bg-primary">
-                            <div class="card-body">
-                                <div>
-                                    <h6>Pending Stock Requests</h6>
-                                    <h2 th:text="${pendingStockRequests}">0</h2>
-                                </div>
-                                <i class="bi bi-clipboard-check"></i>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
                 <div class="row mt-4">
@@ -408,8 +384,8 @@
                     <div class="card-body">
                         <h4>Welcome, Procurement Officer</h4>
                         <p>
-                            Order stock from suppliers and approve or reject purchase orders and
-                            department stock requests before the storekeeper acts on them.
+                            Order stock from suppliers and approve or reject purchase orders
+                            before the storekeeper receives against them.
                         </p>
                     </div>
                 </div>

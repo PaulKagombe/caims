@@ -3,8 +3,6 @@ package com.countyassembly.caims.stockout;
 import com.countyassembly.caims.department.DepartmentService;
 import com.countyassembly.caims.material.MaterialService;
 import com.countyassembly.caims.security.CustomUserDetails;
-import com.countyassembly.caims.StockRequest.StockRequest;
-import com.countyassembly.caims.StockRequest.StockRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -24,34 +22,31 @@ public class StockOutController {
     private static final Logger log = LoggerFactory.getLogger(StockOutController.class);
 
     private final StockOutService stockOutService;
-    private final StockRequestService stockRequestService;
     private final MaterialService materialService;
     private final DepartmentService departmentService;
 
     @GetMapping
     public String list(Model model) {
 
-        model.addAttribute("pendingRequests", stockRequestService.findPending());
-        model.addAttribute("approvedRequests", stockRequestService.findApproved());
         model.addAttribute("history", stockOutService.findAll());
         model.addAttribute("activePage", "stockOut");
 
         return "stock-out/list";
     }
 
-    @GetMapping("/new-request")
-    public String showRequestForm(Model model) {
+    @GetMapping("/new")
+    public String showIssueForm(Model model) {
 
-        model.addAttribute("stockRequest", new StockRequest());
+        model.addAttribute("stockOut", new StockOut());
         model.addAttribute("materials", materialService.findAll());
         model.addAttribute("departments", departmentService.findAll());
 
-        return "stock-out/request-form";
+        return "stock-out/issue-form";
     }
 
-    @PostMapping("/request/save")
-    public String saveRequest(
-            @Valid @ModelAttribute("stockRequest") StockRequest stockRequest,
+    @PostMapping("/save")
+    public String save(
+            @Valid @ModelAttribute("stockOut") StockOut stockOut,
             BindingResult result,
             @RequestParam(required = false) Long materialId,
             @RequestParam(required = false) Long departmentId,
@@ -60,47 +55,38 @@ public class StockOutController {
             Model model) {
 
         if (materialId == null) {
-            result.rejectValue("material", "error.stockRequest", "Please select a material.");
+            result.rejectValue("material", "error.stockOut", "Please select a material.");
         }
 
         if (departmentId == null) {
-            result.rejectValue("department", "error.stockRequest", "Please select a department.");
+            result.rejectValue("department", "error.stockOut", "Please select a department.");
         }
 
         if (result.hasErrors()) {
 
-            log.debug("Stock request validation errors: {}", result.getAllErrors());
+            log.debug("Stock out validation errors: {}", result.getAllErrors());
 
             model.addAttribute("materials", materialService.findAll());
             model.addAttribute("departments", departmentService.findAll());
 
-            return "stock-out/request-form";
+            return "stock-out/issue-form";
         }
-
-        stockRequestService.create(stockRequest, materialId, departmentId, principal.getUser());
-
-        redirectAttributes.addFlashAttribute("success",
-                "Request logged and sent to Procurement for approval.");
-
-        return "redirect:/stock-out";
-    }
-
-    @PostMapping("/issue/{stockRequestId}")
-    public String issue(
-            @PathVariable Long stockRequestId,
-            @RequestParam(required = false) String notes,
-            @AuthenticationPrincipal CustomUserDetails principal,
-            RedirectAttributes redirectAttributes) {
 
         try {
 
-            stockOutService.issue(stockRequestId, notes, principal.getUser());
+            stockOutService.issue(stockOut, materialId, departmentId, principal.getUser());
 
             redirectAttributes.addFlashAttribute("success", "Stock issued successfully.");
 
         } catch (IllegalStateException ex) {
 
-            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            // Insufficient stock — send them back to the form rather
+            // than losing what they'd entered.
+            model.addAttribute("materials", materialService.findAll());
+            model.addAttribute("departments", departmentService.findAll());
+            model.addAttribute("error", ex.getMessage());
+
+            return "stock-out/issue-form";
         }
 
         return "redirect:/stock-out";
