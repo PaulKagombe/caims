@@ -75,9 +75,15 @@ public class PurchaseOrderController {
         purchaseOrderService.create(purchaseOrder, materialId, supplierId, principal.getUser());
 
         redirectAttributes.addFlashAttribute("success",
-                "Purchase order created and awaiting approval.");
+                "Purchase order submitted and awaiting Procurement approval.");
 
-        return "redirect:/purchase-orders";
+        // Storekeeper doesn't have access to the full order list (that's
+        // approval-related, procurement/admin only) — send them back to
+        // Stock In, where their order will appear once it's approved.
+        boolean isStorekeeper = principal.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_STOREKEEPER"));
+
+        return isStorekeeper ? "redirect:/stock-in" : "redirect:/purchase-orders";
     }
 
     @PostMapping("/approve/{id}")
