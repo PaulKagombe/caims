@@ -4,7 +4,6 @@ import com.countyassembly.caims.category.CategoryService;
 import com.countyassembly.caims.material.MaterialService;
 import com.countyassembly.caims.PurchaseOrder.PurchaseOrderService;
 import com.countyassembly.caims.security.CustomUserDetails;
-import com.countyassembly.caims.StockRequest.StockRequestService;
 import com.countyassembly.caims.supplier.SupplierService;
 import com.countyassembly.caims.user.SystemUserService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,6 @@ public class DashboardController {
     private final SystemUserService userService;
     private final SupplierService supplierService;
     private final PurchaseOrderService purchaseOrderService;
-    private final StockRequestService stockRequestService;
 
     @GetMapping("/dashboard")
     public String dashboard(
@@ -69,25 +67,23 @@ public class DashboardController {
             model.addAttribute("userCount", userService.count());
             model.addAttribute("supplierCount", supplierService.findAll().size());
             model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
-            model.addAttribute("pendingStockRequests", stockRequestService.findPending().size());
 
         } else if ("STOREKEEPER".equals(roleName)) {
 
             // Storekeepers need inventory numbers plus what's waiting
-            // on them to action (approved POs to receive, approved
-            // requests to issue).
+            // on them to action (approved POs to receive). Issuing
+            // stock is a direct, immediate action now — no approval
+            // queue to surface here.
             model.addAttribute("categoryCount", categoryService.countActive());
             model.addAttribute("materialCount", materialService.countActive());
             model.addAttribute("lowStockCount", materialService.countLowStock());
             model.addAttribute("awaitingReceipt", purchaseOrderService.findApproved().size());
-            model.addAttribute("awaitingIssue", stockRequestService.findApproved().size());
 
         } else if ("PROCUREMENT_OFFICER".equals(roleName)) {
 
             // Procurement needs to see what's waiting on their approval.
             model.addAttribute("supplierCount", supplierService.findAll().size());
             model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
-            model.addAttribute("pendingStockRequests", stockRequestService.findPending().size());
 
         }
         // AUDITOR, MEMBER: no module data yet exists that's relevant to
