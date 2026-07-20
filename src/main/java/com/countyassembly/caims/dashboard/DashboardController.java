@@ -77,6 +77,7 @@ public class DashboardController {
             model.addAttribute("categoryCount", categoryService.countActive());
             model.addAttribute("materialCount", materialService.countActive());
             model.addAttribute("lowStockCount", materialService.countLowStock());
+            model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
             model.addAttribute("awaitingReceipt", purchaseOrderService.findApproved().size());
 
         } else if ("PROCUREMENT_OFFICER".equals(roleName)) {
