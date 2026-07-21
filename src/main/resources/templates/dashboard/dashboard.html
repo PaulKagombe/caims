@@ -165,10 +165,11 @@
                                         <span th:text="${lowStockCount}">0</span> material(s) at or below reorder level —
                                         <a th:href="@{/materials}">review stock</a>
                                     </li>
-                                    <li class="list-group-item" th:if="${pendingPurchaseOrders > 0}">
+                                    <li class="list-group-item" th:if="${pendingPurchaseOrders > 0 or pendingRestockRequests > 0}">
                                         <i class="bi bi-hourglass-split text-info"></i>
-                                        <span th:text="${pendingPurchaseOrders}">0</span> purchase order(s) awaiting Procurement approval —
-                                        <a th:href="@{/purchase-orders}">review</a>
+                                        <span th:text="${pendingPurchaseOrders + pendingRestockRequests}">0</span> item(s) awaiting Procurement approval —
+                                        <a th:href="@{/purchase-orders}">review orders</a> /
+                                        <a th:href="@{/restock-requests}">review requests</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a th:href="@{/users}">
@@ -293,6 +294,13 @@
                                         </a>
                                     </div>
 
+                                    <div class="col-md-3">
+                                        <a th:href="@{/restock-requests/new}" class="btn btn-outline-danger w-100">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                            Request Restock
+                                        </a>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -342,6 +350,18 @@
                         </div>
                     </div>
 
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-primary">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Pending Restock Requests</h6>
+                                    <h2 th:text="${pendingRestockRequests}">0</h2>
+                                </div>
+                                <i class="bi bi-arrow-repeat"></i>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="row mt-4">
@@ -353,24 +373,31 @@
                             <div class="card-body">
                                 <div class="row g-3">
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <a th:href="@{/suppliers}" class="btn btn-warning w-100">
                                             <i class="bi bi-truck"></i>
                                             Suppliers
                                         </a>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <a th:href="@{/purchase-orders/new}" class="btn btn-primary w-100">
                                             <i class="bi bi-file-earmark-text"></i>
-                                            New Purchase Order
+                                            New Order
                                         </a>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <a th:href="@{/purchase-orders}" class="btn btn-outline-primary w-100">
                                             <i class="bi bi-clipboard-check"></i>
-                                            Review Approvals
+                                            Review Orders
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <a th:href="@{/restock-requests}" class="btn btn-outline-danger w-100">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                            Review Requests
                                         </a>
                                     </div>
 

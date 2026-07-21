@@ -79,7 +79,7 @@
                         </a>
                     </li>
 
-                    <li>
+                    <li sec:authorize="hasAnyRole('ADMIN','STOREKEEPER')">
                         <a th:href="@{/stock-in}"
                            th:classappend="${activePage == 'stockIn'} ? 'active'">
                             <i class="bi bi-box-arrow-in-down"></i>
@@ -87,7 +87,7 @@
                         </a>
                     </li>
 
-                    <li>
+                    <li sec:authorize="hasAnyRole('ADMIN','STOREKEEPER')">
                         <a th:href="@{/stock-out}"
                            th:classappend="${activePage == 'stockOut'} ? 'active'">
                             <i class="bi bi-box-arrow-up"></i>
@@ -102,7 +102,7 @@
             <!-- ================= PROCUREMENT ================= -->
 
             <div class="sidebar-group"
-                 th:classappend="${activePage == 'suppliers' or activePage == 'purchaseOrders'} ? 'open'">
+                 th:classappend="${activePage == 'suppliers' or activePage == 'purchaseOrders' or activePage == 'restockRequests'} ? 'open'">
 
                 <button type="button" class="sidebar-section-toggle" data-target="group-procurement">
                     <span>PROCUREMENT</span>
@@ -111,7 +111,7 @@
 
                 <ul class="sidebar-menu" id="group-procurement">
 
-                    <li>
+                    <li sec:authorize="hasAnyRole('ADMIN','PROCUREMENT_OFFICER')">
                         <a th:href="@{/suppliers}"
                            th:classappend="${activePage == 'suppliers'} ? 'active'">
                             <i class="bi bi-truck"></i>
@@ -119,11 +119,19 @@
                         </a>
                     </li>
 
-                    <li>
+                    <li sec:authorize="hasAnyRole('ADMIN','PROCUREMENT_OFFICER')">
                         <a th:href="@{/purchase-orders}"
                            th:classappend="${activePage == 'purchaseOrders'} ? 'active'">
                             <i class="bi bi-file-earmark-text"></i>
                             <span>Purchase Orders</span>
+                        </a>
+                    </li>
+
+                    <li sec:authorize="hasAnyRole('ADMIN','STOREKEEPER','PROCUREMENT_OFFICER')">
+                        <a th:href="@{/restock-requests}"
+                           th:classappend="${activePage == 'restockRequests'} ? 'active'">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <span>Restock Requests</span>
                         </a>
                     </li>
 
@@ -143,7 +151,7 @@
 
                 <ul class="sidebar-menu" id="group-administration">
 
-                    <li>
+                    <li sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/departments}"
                            th:classappend="${activePage == 'departments'} ? 'active'">
                             <i class="bi bi-building"></i>

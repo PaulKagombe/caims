@@ -36,6 +36,36 @@ public class PurchaseOrderService {
         return purchaseOrderRepository.save(order);
     }
 
+    /**
+     * Creates a Purchase Order that's already APPROVED. Used when
+     * Procurement approves a Storekeeper's RestockRequest — picking the
+     * supplier and approving happen in the same action, so there's no
+     * separate PENDING step for this order (it's redundant: the same
+     * officer would just be approving their own action a second time).
+     */
+    public PurchaseOrder createApproved(
+            Integer quantity,
+            Long materialId,
+            Long supplierId,
+            SystemUser requestedBy,
+            SystemUser approvedBy) {
+
+        Material material = requireMaterial(materialId);
+        Supplier supplier = requireSupplier(supplierId);
+
+        PurchaseOrder order = PurchaseOrder.builder()
+                .quantity(quantity)
+                .material(material)
+                .supplier(supplier)
+                .requestedBy(requestedBy)
+                .approvedBy(approvedBy)
+                .approvedAt(LocalDateTime.now())
+                .status(PurchaseOrderStatus.APPROVED)
+                .build();
+
+        return purchaseOrderRepository.save(order);
+    }
+
     public PurchaseOrder approve(Long id, SystemUser approver) {
 
         PurchaseOrder order = findById(id);

@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.Customizer;
@@ -103,17 +102,15 @@ public class SecurityConfig {
                         // Departments — admin manages the department list
                         .requestMatchers("/departments/**").hasRole("ADMIN")
 
-                        // Purchase Orders — created by admin, procurement, OR storekeeper
-                        // (storekeeper can flag "we're low, please order more"), but
-                        // approving/rejecting and the full order list stay
-                        // procurement/admin-only. These specific matchers must come
-                        // BEFORE the general "/purchase-orders/**" rule below, since
-                        // Spring Security uses the first matching rule.
-                        .requestMatchers(HttpMethod.GET, "/purchase-orders/new")
-                        .hasAnyRole("ADMIN", "PROCUREMENT_OFFICER", "STOREKEEPER")
-                        .requestMatchers(HttpMethod.POST, "/purchase-orders/save")
-                        .hasAnyRole("ADMIN", "PROCUREMENT_OFFICER", "STOREKEEPER")
+                        // Purchase Orders — created and approved by procurement (or admin)
+                        // only. Storekeeper never touches this directly — see
+                        // Restock Requests below for how a Storekeeper flags a need.
                         .requestMatchers("/purchase-orders/**").hasAnyRole("ADMIN", "PROCUREMENT_OFFICER")
+
+                        // Restock Requests — Storekeeper flags a need to reorder,
+                        // Procurement approves (creating the Purchase Order) or rejects
+                        .requestMatchers("/restock-requests/**")
+                        .hasAnyRole("ADMIN", "STOREKEEPER", "PROCUREMENT_OFFICER")
 
                         // Stock In / Stock Out — executed by the storekeeper (or admin)
                         .requestMatchers("/stock-in/**").hasAnyRole("ADMIN", "STOREKEEPER")

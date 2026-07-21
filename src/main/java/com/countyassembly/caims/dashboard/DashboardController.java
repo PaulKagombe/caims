@@ -3,6 +3,7 @@ package com.countyassembly.caims.dashboard;
 import com.countyassembly.caims.category.CategoryService;
 import com.countyassembly.caims.material.MaterialService;
 import com.countyassembly.caims.PurchaseOrder.PurchaseOrderService;
+import com.countyassembly.caims.restockrequest.RestockRequestService;
 import com.countyassembly.caims.security.CustomUserDetails;
 import com.countyassembly.caims.supplier.SupplierService;
 import com.countyassembly.caims.user.SystemUserService;
@@ -36,6 +37,7 @@ public class DashboardController {
     private final SystemUserService userService;
     private final SupplierService supplierService;
     private final PurchaseOrderService purchaseOrderService;
+    private final RestockRequestService restockRequestService;
 
     @GetMapping("/dashboard")
     public String dashboard(
@@ -67,6 +69,7 @@ public class DashboardController {
             model.addAttribute("userCount", userService.count());
             model.addAttribute("supplierCount", supplierService.findAll().size());
             model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
+            model.addAttribute("pendingRestockRequests", restockRequestService.findPending().size());
 
         } else if ("STOREKEEPER".equals(roleName)) {
 
@@ -77,7 +80,6 @@ public class DashboardController {
             model.addAttribute("categoryCount", categoryService.countActive());
             model.addAttribute("materialCount", materialService.countActive());
             model.addAttribute("lowStockCount", materialService.countLowStock());
-            model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
             model.addAttribute("awaitingReceipt", purchaseOrderService.findApproved().size());
 
         } else if ("PROCUREMENT_OFFICER".equals(roleName)) {
@@ -85,6 +87,7 @@ public class DashboardController {
             // Procurement needs to see what's waiting on their approval.
             model.addAttribute("supplierCount", supplierService.findAll().size());
             model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
+            model.addAttribute("pendingRestockRequests", restockRequestService.findPending().size());
 
         }
         // AUDITOR, MEMBER: no module data yet exists that's relevant to
