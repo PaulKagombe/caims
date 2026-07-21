@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Approve Restock Request | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+        <div class="container mt-5">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h3>Approve Restock Request</h3>
+                </div>
+                <div class="card-body">
+
+                    <dl class="row mb-4">
+                        <dt class="col-sm-3">Material</dt>
+                        <dd class="col-sm-9" th:text="${restockRequest.material.code + ' — ' + restockRequest.material.name}"></dd>
+
+                        <dt class="col-sm-3">Current Stock</dt>
+                        <dd class="col-sm-9" th:text="${restockRequest.material.currentStock + ' ' + restockRequest.material.unit}"></dd>
+
+                        <dt class="col-sm-3">Quantity Requested</dt>
+                        <dd class="col-sm-9" th:text="${restockRequest.quantity}"></dd>
+
+                        <dt class="col-sm-3">Reason</dt>
+                        <dd class="col-sm-9" th:text="${restockRequest.reason}"></dd>
+
+                        <dt class="col-sm-3">Requested By</dt>
+                        <dd class="col-sm-9" th:text="${restockRequest.requestedBy != null ? restockRequest.requestedBy.username : '—'}"></dd>
+                    </dl>
+
+                    <form th:action="@{/restock-requests/approve/{id}(id=${restockRequest.id})}" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">Supplier</label>
+                            <select name="supplierId" class="form-control">
+                                <option value="">Select a supplier...</option>
+                                <option th:each="s : ${suppliers}"
+                                        th:value="${s.id}"
+                                        th:text="${s.name}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-success">
+                            <i class="bi bi-check-lg"></i>
+                            Approve &amp; Create Purchase Order
+                        </button>
+                        <a th:href="@{/restock-requests}" class="btn btn-secondary">Cancel</a>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+
+</html>

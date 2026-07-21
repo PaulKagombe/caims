@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Restock Requests | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Restock Requests</h1>
+                <p class="page-subtitle">
+                    Storekeeper-flagged reorder needs, reviewed by Procurement.
+                </p>
+            </div>
+            <a sec:authorize="hasAnyRole('ADMIN','STOREKEEPER')"
+               th:href="@{/restock-requests/new}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                New Request
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Material</th>
+                    <th>Qty</th>
+                    <th>Reason</th>
+                    <th>Requested By</th>
+                    <th>Status</th>
+                    <th>Reviewed By</th>
+                    <th width="170">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${requests}">
+                    <td th:text="${r.material.code + ' — ' + r.material.name}"></td>
+                    <td th:text="${r.quantity}"></td>
+                    <td th:text="${r.reason}"></td>
+                    <td th:text="${r.requestedBy != null ? r.requestedBy.username : '—'}"></td>
+                    <td>
+                        <span th:if="${r.status.name() == 'PENDING'}" class="badge badge-inactive">Pending</span>
+                        <span th:if="${r.status.name() == 'APPROVED'}" class="badge badge-active">Approved</span>
+                        <span th:if="${r.status.name() == 'REJECTED'}" class="badge badge-inactive">Rejected</span>
+                    </td>
+                    <td th:text="${r.reviewedBy != null ? r.reviewedBy.username : '—'}"></td>
+                    <td>
+                        <th:block th:if="${r.status.name() == 'PENDING'}" sec:authorize="hasAnyRole('ADMIN','PROCUREMENT_OFFICER')">
+                            <a th:href="@{/restock-requests/approve-form/{id}(id=${r.id})}" class="btn btn-success btn-sm">
+                                <i class="bi bi-check-lg"></i> Approve
+                            </a>
+                            <form th:action="@{/restock-requests/reject/{id}(id=${r.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('Reject this restock request?')">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </form>
+                        </th:block>
+                        <a th:if="${r.purchaseOrder != null}" th:href="@{/purchase-orders}" class="btn btn-outline-primary btn-sm">
+                            View PO
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(requests)}">
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-arrow-repeat empty-state-icon"></i>
+                            <h4>No Restock Requests</h4>
+                            <p>Flag a material that needs reordering to get started.</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
