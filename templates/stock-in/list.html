@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Stock In | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Stock In</h1>
+                <p class="page-subtitle">Receive approved purchase orders into inventory.</p>
+            </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- ================= AWAITING RECEIPT ================= -->
+
+        <div class="table-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Approved — Awaiting Receipt</h5>
+            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Material</th>
+                    <th>Supplier</th>
+                    <th>Quantity Ordered</th>
+                    <th width="320">Receive</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${approvedOrders}">
+                    <td th:text="${o.material.code + ' — ' + o.material.name}"></td>
+                    <td th:text="${o.supplier.name}"></td>
+                    <td th:text="${o.quantity + ' ' + o.material.unit}"></td>
+                    <td>
+                        <form th:action="@{/stock-in/receive/{id}(id=${o.id})}" method="post"
+                              class="d-flex gap-2"
+                              onsubmit="return confirm('Confirm receipt of ' + '[[${o.quantity}]]' + ' [[${o.material.unit}]] of [[${o.material.name}]]?')">
+                            <input type="text" name="notes" class="form-control form-control-sm"
+                                   placeholder="Notes (optional)">
+                            <button type="submit" class="btn btn-success btn-sm text-nowrap">
+                                <i class="bi bi-box-arrow-in-down"></i> Receive
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(approvedOrders)}">
+                    <td colspan="4" class="text-center text-muted py-3">
+                        Nothing awaiting receipt right now.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ================= HISTORY (AUDIT TRAIL) ================= -->
+
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">Receipt History</h5>
+            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Material</th>
+                    <th>Supplier</th>
+                    <th>Quantity Received</th>
+                    <th>Received By</th>
+                    <th>Notes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="h : ${history}">
+                    <td th:text="${#temporals.format(h.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
+                    <td th:text="${h.purchaseOrder.material.name}"></td>
+                    <td th:text="${h.purchaseOrder.supplier.name}"></td>
+                    <td th:text="${h.quantityReceived + ' ' + h.purchaseOrder.material.unit}"></td>
+                    <td th:text="${h.receivedBy != null ? h.receivedBy.username : '—'}"></td>
+                    <td th:text="${h.notes}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(history)}">
+                    <td colspan="6" class="text-center text-muted py-3">No stock has been received yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Purchase Orders Report | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Purchase Orders Report</h1>
+                <p class="page-subtitle">Order history by status and supplier.</p>
+            </div>
+            <a th:href="@{/reports}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> All Reports
+            </a>
+        </div>
+
+        <div class="search-container">
+            <form th:action="@{/reports/purchase-orders}" method="get" class="row g-2 align-items-end">
+
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-control">
+                        <option value="">All Statuses</option>
+                        <option th:each="s : ${statuses}"
+                                th:value="${s}"
+                                th:text="${s}"
+                                th:selected="${status != null and status.name() == s.name()}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Supplier</label>
+                    <select name="supplierId" class="form-control">
+                        <option value="">All Suppliers</option>
+                        <option th:each="s : ${suppliers}"
+                                th:value="${s.id}"
+                                th:text="${s.name}"
+                                th:selected="${supplierId != null and supplierId == s.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100"><i class="bi bi-filter"></i> Filter</button>
+                </div>
+
+                <div class="col-md-4 text-md-end">
+                    <a class="btn btn-outline-primary"
+                       th:href="@{/reports/purchase-orders(status=${status}, supplierId=${supplierId}, export='csv')}">
+                        <i class="bi bi-download"></i> Export CSV
+                    </a>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Material</th>
+                    <th>Supplier</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Requested By</th>
+                    <th>Approved By</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="po : ${orders}">
+                    <td th:text="${#temporals.format(po.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
+                    <td th:text="${po.material.code + ' — ' + po.material.name}"></td>
+                    <td th:text="${po.supplier != null ? po.supplier.name : '—'}"></td>
+                    <td th:text="${po.quantity}"></td>
+                    <td>
+                        <span th:if="${po.status.name() == 'PENDING'}" class="badge badge-inactive">Pending</span>
+                        <span th:if="${po.status.name() == 'APPROVED'}" class="badge badge-active">Approved</span>
+                        <span th:if="${po.status.name() == 'REJECTED'}" class="badge badge-inactive">Rejected</span>
+                        <span th:if="${po.status.name() == 'RECEIVED'}" class="badge badge-active">Received</span>
+                    </td>
+                    <td th:text="${po.requestedBy != null ? po.requestedBy.username : '—'}"></td>
+                    <td th:text="${po.approvedBy != null ? po.approvedBy.username : '—'}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(orders)}">
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-file-earmark-text empty-state-icon"></i>
+                            <h4>No Purchase Orders Found</h4>
+                            <p>Try widening your filters.</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

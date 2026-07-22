@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Low Stock Report | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Low Stock Report</h1>
+                <p class="page-subtitle">Materials at or below their reorder level.</p>
+            </div>
+            <div>
+                <a th:href="@{/reports/low-stock(export='csv')}" class="btn btn-outline-primary">
+                    <i class="bi bi-download"></i> Export CSV
+                </a>
+                <a th:href="@{/reports}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> All Reports
+                </a>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Current Stock</th>
+                    <th>Reorder Level</th>
+                    <th>Unit</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${materials}">
+                    <td th:text="${m.code}"></td>
+                    <td th:text="${m.name}"></td>
+                    <td th:text="${m.currentStock}"></td>
+                    <td th:text="${m.reorderLevel}"></td>
+                    <td th:text="${m.unit}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(materials)}">
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <i class="bi bi-check-circle empty-state-icon"></i>
+                            <h4>Nothing Low on Stock</h4>
+                            <p>All materials are above their reorder level.</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

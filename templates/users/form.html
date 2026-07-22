@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title th:text="${isNew} ? 'Add User' : 'Edit User'">User</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="container mt-5">
+
+            <div class="card shadow">
+
+                <div class="card-header">
+
+                    <h3 th:text="${isNew} ? 'Add User' : 'Edit User'">User</h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div th:if="${error}"
+                         class="alert alert-danger alert-dismissible fade show">
+                        <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <form th:action="@{/users/save}"
+                          th:object="${user}"
+                          method="post">
+
+                        <!-- Hidden ID (used during editing) -->
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" th:field="*{firstName}">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('firstName')}"
+                                     th:errors="*{firstName}"></div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" th:field="*{lastName}">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('lastName')}"
+                                     th:errors="*{lastName}"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" th:field="*{username}"
+                                       autocomplete="off">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('username')}"
+                                     th:errors="*{username}"></div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" th:field="*{email}">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('email')}"
+                                     th:errors="*{email}"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" th:field="*{phoneNumber}">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('phoneNumber')}"
+                                     th:errors="*{phoneNumber}"></div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Role</label>
+                                <select name="roleId" class="form-control">
+                                    <option value="">Select a role...</option>
+                                    <option th:each="r : ${roles}"
+                                            th:value="${r.id}"
+                                            th:text="${r.name}"
+                                            th:selected="${user.role != null and user.role.id == r.id}">
+                                    </option>
+                                </select>
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('role')}"
+                                     th:errors="*{role}"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Password
+                                <span th:unless="${isNew}" class="text-muted" style="font-weight:400;">
+                                    (leave blank to keep the current password)
+                                </span>
+                            </label>
+                            <input type="password" class="form-control" name="password" autocomplete="new-password">
+                            <div class="text-danger mt-1"
+                                 th:if="${#fields.hasErrors('password')}"
+                                 th:errors="*{password}"></div>
+                        </div>
+
+                        <div class="alert alert-info" th:if="${!isNew}">
+                            <i class="bi bi-info-circle"></i>
+                            Active status is managed from the
+                            <a th:href="@{/users}">user list</a> using the status button on
+                            each row, not from this form.
+                        </div>
+
+                        <button class="btn btn-primary">
+                            <i class="bi bi-save"></i>
+                            Save
+                        </button>
+
+                        <a th:href="@{/users}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title th:text="${material.id == null} ? 'Add Material' : 'Edit Material'">Material</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="container mt-5">
+
+            <div class="card shadow">
+
+                <div class="card-header">
+                    <h3 th:text="${material.id == null} ? 'Add Material' : 'Edit Material'">Material</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div th:if="${error}"
+                         class="alert alert-danger alert-dismissible fade show">
+                        <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <form th:action="@{/materials/save}"
+                          th:object="${material}"
+                          method="post">
+
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Code / SKU</label>
+                                <input type="text" class="form-control" th:field="*{code}">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('code')}"
+                                     th:errors="*{code}"></div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Barcode <span class="text-muted" style="font-weight:400;">(optional)</span></label>
+                                <input type="text" class="form-control" th:field="*{barcode}" placeholder="Scan or type barcode">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('barcode')}"
+                                     th:errors="*{barcode}"></div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Material Name</label>
+                                <input type="text" class="form-control" th:field="*{name}">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('name')}"
+                                     th:errors="*{name}"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" rows="3" th:field="*{description}"></textarea>
+                            <div class="text-danger mt-1"
+                                 th:if="${#fields.hasErrors('description')}"
+                                 th:errors="*{description}"></div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Category</label>
+                                <select name="categoryId" class="form-control">
+                                    <option value="">Select a category...</option>
+                                    <option th:each="c : ${categories}"
+                                            th:value="${c.id}"
+                                            th:text="${c.name}"
+                                            th:selected="${material.category != null and material.category.id == c.id}">
+                                    </option>
+                                </select>
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('category')}"
+                                     th:errors="*{category}"></div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Unit</label>
+                                <input type="text" class="form-control" th:field="*{unit}"
+                                       placeholder="e.g. PCS, KG, BOX" list="unit-suggestions">
+                                <datalist id="unit-suggestions">
+                                    <option value="PCS"></option>
+                                    <option value="KG"></option>
+                                    <option value="LTR"></option>
+                                    <option value="BOX"></option>
+                                    <option value="PACK"></option>
+                                    <option value="RIM"></option>
+                                </datalist>
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('unit')}"
+                                     th:errors="*{unit}"></div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Unit Price (KES)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" th:field="*{unitPrice}">
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('unitPrice')}"
+                                     th:errors="*{unitPrice}"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Current Stock</label>
+                                <input type="number" min="0" class="form-control" th:field="*{currentStock}">
+                                <div class="form-text">
+                                    Starting/adjusted balance. Once Stock In / Stock Out are built,
+                                    this value will normally be changed through those instead.
+                                </div>
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('currentStock')}"
+                                     th:errors="*{currentStock}"></div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Reorder Level</label>
+                                <input type="number" min="0" class="form-control" th:field="*{reorderLevel}">
+                                <div class="form-text">
+                                    A "Low" badge shows on the list once stock falls to or below this.
+                                </div>
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('reorderLevel')}"
+                                     th:errors="*{reorderLevel}"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" th:field="*{active}">
+                            <label class="form-check-label">Active</label>
+                        </div>
+
+                        <button class="btn btn-primary">
+                            <i class="bi bi-save"></i>
+                            Save
+                        </button>
+
+                        <a th:href="@{/materials}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

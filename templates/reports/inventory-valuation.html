@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Inventory Valuation Report | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Inventory Valuation</h1>
+                <p class="page-subtitle">Current stock value by material.</p>
+            </div>
+            <div>
+                <a th:href="@{/reports/inventory-valuation(export='csv')}" class="btn btn-outline-primary">
+                    <i class="bi bi-download"></i> Export CSV
+                </a>
+                <a th:href="@{/reports}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> All Reports
+                </a>
+            </div>
+        </div>
+
+        <div class="card welcome-card mb-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Total Inventory Value</h4>
+                <h2 class="mb-0" th:text="${'KES ' + #numbers.formatDecimal(grandTotal, 1, 2)}"></h2>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Unit</th>
+                    <th>Current Stock</th>
+                    <th>Unit Price</th>
+                    <th>Total Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${rows}">
+                    <td th:text="${r.code()}"></td>
+                    <td th:text="${r.name()}"></td>
+                    <td th:text="${r.unit()}"></td>
+                    <td th:text="${r.currentStock()}"></td>
+                    <td th:text="${'KES ' + #numbers.formatDecimal(r.unitPrice(), 1, 2)}"></td>
+                    <td th:text="${'KES ' + #numbers.formatDecimal(r.totalValue(), 1, 2)}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(rows)}">
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <i class="bi bi-cash-stack empty-state-icon"></i>
+                            <h4>No Materials Found</h4>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

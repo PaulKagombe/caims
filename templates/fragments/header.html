@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="header">
+
+    <header class="app-header">
+
+        <!-- Left -->
+
+        <div class="header-left">
+
+            <!-- Mobile sidebar toggle: hidden on desktop (d-lg-none),
+                 since the sidebar is always visible there. -->
+            <button id="sidebarToggle" class="header-icon d-lg-none">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <h4 class="app-title">
+
+                CAIMS
+
+            </h4>
+
+            <span class="app-divider"></span>
+
+            <span class="app-subtitle">
+
+                County Assembly Inventory Management System
+
+            </span>
+
+        </div>
+
+        <!-- Right -->
+
+        <div class="header-right">
+
+            <!-- Notifications -->
+
+            <button class="header-icon">
+
+                <i class="bi bi-bell"></i>
+
+            </button>
+
+            <!-- User -->
+
+            <div class="header-user">
+
+                <div class="avatar">
+
+                    <i class="bi bi-person-fill"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="username"
+                         sec:authentication="name">
+
+                        Administrator
+
+                    </div>
+
+                    <small class="role"
+                           th:text="${#strings.replace(#authentication.principal.user.role.name, '_', ' ')}">
+
+                        System Administrator
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+</div>
+
+</html>

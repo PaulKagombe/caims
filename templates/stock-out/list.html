@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Stock Out | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Stock Out</h1>
+                <p class="page-subtitle">Record items collected from the store.</p>
+            </div>
+            <a th:href="@{/stock-out/new}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Log Issue
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- ================= ISSUE HISTORY (AUDIT TRAIL) ================= -->
+
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">Issue History</h5>
+            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Material</th>
+                    <th>Department</th>
+                    <th>Requester</th>
+                    <th>Quantity</th>
+                    <th>Issued By</th>
+                    <th>Notes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${history}">
+                    <td th:text="${#temporals.format(s.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
+                    <td th:text="${s.material.code + ' — ' + s.material.name}"></td>
+                    <td th:text="${s.department.name}"></td>
+                    <td th:text="${s.requesterName}"></td>
+                    <td th:text="${s.quantity + ' ' + s.material.unit}"></td>
+                    <td th:text="${s.issuedBy != null ? s.issuedBy.username : '—'}"></td>
+                    <td th:text="${s.notes}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(history)}">
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-box-arrow-up empty-state-icon"></i>
+                            <h4>No Stock Issued Yet</h4>
+                            <p>Log an issue to record an item leaving the store.</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

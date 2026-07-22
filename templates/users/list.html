@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>User Management | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <!-- ================= PAGE HEADER ================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>User Management</h1>
+
+                <p class="page-subtitle">
+                    Create accounts and assign roles for other CAIMS users.
+                </p>
+
+            </div>
+
+            <a th:href="@{/users/new}" class="btn btn-primary">
+
+                <i class="bi bi-person-plus"></i>
+
+                Add User
+
+            </a>
+
+        </div>
+
+        <!-- Success Message -->
+
+        <div th:if="${success}"
+             class="alert alert-success alert-dismissible fade show">
+
+            <span th:text="${success}"></span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"></button>
+
+        </div>
+
+        <!-- Error Message -->
+
+        <div th:if="${error}"
+             class="alert alert-danger alert-dismissible fade show">
+
+            <span th:text="${error}"></span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"></button>
+
+        </div>
+
+        <!-- Users Table -->
+
+        <div class="table-card">
+
+            <table class="table">
+
+                <thead>
+
+                <tr>
+
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th width="160">Actions</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="u : ${users}">
+
+                    <td th:text="${u.firstName + ' ' + u.lastName}"></td>
+
+                    <td th:text="${u.username}"></td>
+
+                    <td th:text="${u.email}"></td>
+
+                    <td th:text="${u.role != null ? u.role.name : '—'}"></td>
+
+                    <td>
+
+                        <span th:if="${u.active}"
+                              class="badge badge-active">
+
+                            Active
+
+                        </span>
+
+                        <span th:unless="${u.active}"
+                              class="badge badge-inactive">
+
+                            Inactive
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <a th:href="@{/users/edit/{id}(id=${u.id})}"
+                           class="btn btn-warning btn-sm">
+
+                            <i class="bi bi-pencil-square"></i>
+
+                        </a>
+
+                        <!-- An admin can't deactivate their own account
+                             (server also enforces this — see UserController). -->
+                        <th:block th:if="${#authentication.name != u.username}">
+
+                            <form th:if="${u.active}"
+                                  th:action="@{/users/deactivate/{id}(id=${u.id})}"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Deactivate this user? They will no longer be able to log in.')">
+
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-person-x"></i>
+                                </button>
+
+                            </form>
+
+                            <form th:unless="${u.active}"
+                                  th:action="@{/users/activate/{id}(id=${u.id})}"
+                                  method="post"
+                                  class="d-inline">
+
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-person-check"></i>
+                                </button>
+
+                            </form>
+
+                        </th:block>
+
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(users)}">
+
+                    <td colspan="6">
+
+                        <div class="empty-state">
+
+                            <i class="bi bi-people empty-state-icon"></i>
+
+                            <h4>No Users Found</h4>
+
+                            <p>Create the first user account to get started.</p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+package com.countyassembly.caims.dashboard;
+
+import com.countyassembly.caims.category.CategoryService;
+import com.countyassembly.caims.material.MaterialService;
+import com.countyassembly.caims.purchaseorder.PurchaseOrderService;
+import com.countyassembly.caims.report.InventoryValuationRow;
+import com.countyassembly.caims.report.ReportService;
+import com.countyassembly.caims.restockrequest.RestockRequestService;
+import com.countyassembly.caims.security.CustomUserDetails;
+import com.countyassembly.caims.supplier.SupplierService;
+import com.countyassembly.caims.user.SystemUserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.math.BigDecimal;
+
+/**
+ * ============================================================
+ * Dashboard Controller
+ * ============================================================
+ *
+ * Displays a dashboard whose content varies by the logged-in
+ * user's role. The role is read from the authenticated principal
+ * (CustomUserDetails -> SystemUser -> Role) — never from any
+ * request parameter — so it can't be spoofed by the client.
+ *
+ * Only ADMIN gets the full system-wide overview (all module
+ * counts, user management shortcut). Other roles get a narrower
+ * dashboard relevant to what they're responsible for.
+ */
+@Controller
+@RequiredArgsConstructor
+public class DashboardController {
+
+    private final CategoryService categoryService;
+    private final MaterialService materialService;
+    private final SystemUserService userService;
+    private final SupplierService supplierService;
+    private final PurchaseOrderService purchaseOrderService;
+    private final RestockRequestService restockRequestService;
+    private final ReportService reportService;
+
+    @GetMapping("/dashboard")
+    public String dashboard(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @RequestParam(required = false) Boolean accessDenied,
+            Model model) {
+
+        model.addAttribute("activePage", "dashboard");
+
+        if (Boolean.TRUE.equals(accessDenied)) {
+            model.addAttribute("error", "You don't have permission to access that page.");
+        }
+
+        String roleName = (principal != null
+                && principal.getUser() != null
+                && principal.getUser().getRole() != null)
+                ? principal.getUser().getRole().getName()
+                : "MEMBER";
+
+        model.addAttribute("roleName", roleName);
+
+        if ("ADMIN".equals(roleName)) {
+
+            // Full system-wide overview — this is the only role that
+            // sees traffic/management-level data across every module.
+            model.addAttribute("categoryCount", categoryService.countActive());
+            model.addAttribute("materialCount", materialService.countActive());
+            model.addAttribute("lowStockCount", materialService.countLowStock());
+            model.addAttribute("userCount", userService.count());
+            model.addAttribute("supplierCount", supplierService.findAll().size());
+            model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
+            model.addAttribute("pendingRestockRequests", restockRequestService.findPending().size());
+
+        } else if ("STOREKEEPER".equals(roleName)) {
+
+            // Storekeepers need inventory numbers plus what's waiting
+            // on them to action (approved POs to receive). Issuing
+            // stock is a direct, immediate action now — no approval
+            // queue to surface here.
+            model.addAttribute("categoryCount", categoryService.countActive());
+            model.addAttribute("materialCount", materialService.countActive());
+            model.addAttribute("lowStockCount", materialService.countLowStock());
+            model.addAttribute("awaitingReceipt", purchaseOrderService.findApproved().size());
+
+        } else if ("PROCUREMENT_OFFICER".equals(roleName)) {
+
+            // Procurement needs to see what's waiting on their approval.
+            model.addAttribute("supplierCount", supplierService.findAll().size());
+            model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
+            model.addAttribute("pendingRestockRequests", restockRequestService.findPending().size());
+
+        } else if ("AUDITOR".equals(roleName)) {
+
+            model.addAttribute("materialCount", materialService.countActive());
+            model.addAttribute("lowStockCount", materialService.countLowStock());
+
+            BigDecimal inventoryValue = reportService.getInventoryValuation().stream()
+                    .map(InventoryValuationRow::totalValue)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            model.addAttribute("inventoryValue", inventoryValue);
+
+        }
+        // MEMBER: no module data yet exists that's relevant to them
+        // (Requests aren't built out yet) — their dashboard view is
+        // static for now.
+
+        return "dashboard/dashboard";
+    }
+
+}

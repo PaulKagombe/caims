@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Stock Movements Report | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Stock Movements</h1>
+                <p class="page-subtitle">Combined Stock In / Stock Out audit trail.</p>
+            </div>
+            <a th:href="@{/reports}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> All Reports
+            </a>
+        </div>
+
+        <div class="search-container">
+            <form th:action="@{/reports/stock-movements}" method="get" class="row g-2 align-items-end">
+
+                <div class="col-md-3">
+                    <label class="form-label">Material</label>
+                    <select name="materialId" class="form-control">
+                        <option value="">All Materials</option>
+                        <option th:each="m : ${materials}"
+                                th:value="${m.id}"
+                                th:text="${m.code + ' — ' + m.name}"
+                                th:selected="${materialId != null and materialId == m.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">From</label>
+                    <input type="date" name="from" class="form-control" th:value="${from}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">To</label>
+                    <input type="date" name="to" class="form-control" th:value="${to}">
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100"><i class="bi bi-filter"></i> Filter</button>
+                </div>
+
+                <div class="col-md-3 text-md-end">
+                    <a class="btn btn-outline-primary"
+                       th:href="@{/reports/stock-movements(materialId=${materialId}, from=${from}, to=${to}, export='csv')}">
+                        <i class="bi bi-download"></i> Export CSV
+                    </a>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Material</th>
+                    <th>Quantity</th>
+                    <th>Counterparty</th>
+                    <th>Performed By</th>
+                    <th>Notes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${movements}">
+                    <td th:text="${#temporals.format(m.date(), 'dd MMM yyyy, HH:mm')}"></td>
+                    <td>
+                        <span th:if="${m.type() == 'IN'}" class="badge badge-active">IN</span>
+                        <span th:if="${m.type() == 'OUT'}" class="badge badge-inactive">OUT</span>
+                    </td>
+                    <td th:text="${m.materialCode() + ' — ' + m.materialName()}"></td>
+                    <td th:text="${m.quantity()}"></td>
+                    <td th:text="${m.counterparty()}"></td>
+                    <td th:text="${m.performedBy()}"></td>
+                    <td th:text="${m.notes()}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(movements)}">
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-arrow-left-right empty-state-icon"></i>
+                            <h4>No Movements Found</h4>
+                            <p>Try widening your filters.</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

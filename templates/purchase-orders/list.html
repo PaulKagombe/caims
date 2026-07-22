@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(~{::title})}">
+    <title>Purchase Orders | CAIMS</title>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/layout :: body(content=~{::content})}">
+
+    <div th:fragment="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Purchase Orders</h1>
+                <p class="page-subtitle">Order stock from suppliers and approve purchase orders.</p>
+            </div>
+            <a th:href="@{/purchase-orders/new}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                New Purchase Order
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- ================= PURCHASE ORDERS ================= -->
+
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">Purchase Orders</h5>
+            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Material</th>
+                    <th>Supplier</th>
+                    <th>Quantity</th>
+                    <th>Requested By</th>
+                    <th>Status</th>
+                    <th width="170">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${orders}">
+                    <td th:text="${o.material.name}"></td>
+                    <td th:text="${o.supplier.name}"></td>
+                    <td th:text="${o.quantity + ' ' + o.material.unit}"></td>
+                    <td th:text="${o.requestedBy != null ? o.requestedBy.username : '—'}"></td>
+                    <td>
+                        <span th:switch="${o.status.name()}">
+                            <span th:case="'PENDING'" class="badge badge-inactive">Pending</span>
+                            <span th:case="'APPROVED'" class="badge badge-active">Approved</span>
+                            <span th:case="'REJECTED'" class="badge badge-inactive">Rejected</span>
+                            <span th:case="'RECEIVED'" class="badge badge-active">Received</span>
+                        </span>
+                    </td>
+                    <td>
+                        <th:block th:if="${o.status.name() == 'PENDING'}">
+                            <form th:action="@{/purchase-orders/approve/{id}(id=${o.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                            </form>
+                            <form th:action="@{/purchase-orders/reject/{id}(id=${o.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('Reject this purchase order?')">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </form>
+                        </th:block>
+                        <span th:unless="${o.status.name() == 'PENDING'}" class="text-muted">—</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(orders)}">
+                    <td colspan="6" class="text-center text-muted py-3">No purchase orders yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
