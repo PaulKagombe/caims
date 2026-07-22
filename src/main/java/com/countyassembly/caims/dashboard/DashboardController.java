@@ -3,6 +3,8 @@ package com.countyassembly.caims.dashboard;
 import com.countyassembly.caims.category.CategoryService;
 import com.countyassembly.caims.material.MaterialService;
 import com.countyassembly.caims.PurchaseOrder.PurchaseOrderService;
+import com.countyassembly.caims.report.InventoryValuationRow;
+import com.countyassembly.caims.report.ReportService;
 import com.countyassembly.caims.restockrequest.RestockRequestService;
 import com.countyassembly.caims.security.CustomUserDetails;
 import com.countyassembly.caims.supplier.SupplierService;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.math.BigDecimal;
 
 /**
  * ============================================================
@@ -38,6 +42,7 @@ public class DashboardController {
     private final SupplierService supplierService;
     private final PurchaseOrderService purchaseOrderService;
     private final RestockRequestService restockRequestService;
+    private final ReportService reportService;
 
     @GetMapping("/dashboard")
     public String dashboard(
@@ -89,10 +94,21 @@ public class DashboardController {
             model.addAttribute("pendingPurchaseOrders", purchaseOrderService.findPending().size());
             model.addAttribute("pendingRestockRequests", restockRequestService.findPending().size());
 
+        } else if ("AUDITOR".equals(roleName)) {
+
+            model.addAttribute("materialCount", materialService.countActive());
+            model.addAttribute("lowStockCount", materialService.countLowStock());
+
+            BigDecimal inventoryValue = reportService.getInventoryValuation().stream()
+                    .map(InventoryValuationRow::totalValue)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            model.addAttribute("inventoryValue", inventoryValue);
+
         }
-        // AUDITOR, MEMBER: no module data yet exists that's relevant to
-        // them (Reports/Requests aren't built out yet) — their dashboard
-        // views are static for now.
+        // MEMBER: no module data yet exists that's relevant to them
+        // (Requests aren't built out yet) — their dashboard view is
+        // static for now.
 
         return "dashboard/dashboard";
     }

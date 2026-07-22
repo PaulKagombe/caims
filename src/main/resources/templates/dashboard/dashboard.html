@@ -424,17 +424,89 @@
                  ================================================ -->
             <div th:case="'AUDITOR'">
 
-                <div class="card activity-card mt-2">
+                <div class="row g-4">
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-primary">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Materials</h6>
+                                    <h2 th:text="${materialCount}">0</h2>
+                                </div>
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-warning">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Low Stock</h6>
+                                    <h2 th:text="${lowStockCount}">0</h2>
+                                </div>
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card dashboard-card bg-success">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Inventory Value</h6>
+                                    <h2 th:text="${'KES ' + #numbers.formatDecimal(inventoryValue, 1, 0)}">0</h2>
+                                </div>
+                                <i class="bi bi-cash-stack"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card activity-card mt-4">
                     <div class="card-header">
-                        <h5 class="mb-0">Read-Only Summary</h5>
+                        <h5 class="mb-0">Reports</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted mb-0">
-                            Detailed audit reports will appear here once the Reports module is
-                            enabled. As an auditor, your access across CAIMS is view-only.
-                        </p>
+                        <div class="row g-3">
+
+                            <div class="col-md-3">
+                                <a th:href="@{/reports/stock-movements}" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-arrow-left-right"></i>
+                                    Stock Movements
+                                </a>
+                            </div>
+
+                            <div class="col-md-3">
+                                <a th:href="@{/reports/purchase-orders}" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                    Purchase Orders
+                                </a>
+                            </div>
+
+                            <div class="col-md-3">
+                                <a th:href="@{/reports/low-stock}" class="btn btn-outline-warning w-100">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Low Stock
+                                </a>
+                            </div>
+
+                            <div class="col-md-3">
+                                <a th:href="@{/reports/inventory-valuation}" class="btn btn-outline-success w-100">
+                                    <i class="bi bi-cash-stack"></i>
+                                    Valuation
+                                </a>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
+
+                <p class="text-muted mt-3">
+                    <i class="bi bi-info-circle"></i>
+                    As Auditor, your access across CAIMS is view-only.
+                </p>
 
             </div>
 

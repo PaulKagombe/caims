@@ -1,8 +1,8 @@
 package com.countyassembly.caims.report;
 
 import com.countyassembly.caims.material.MaterialService;
-import com.countyassembly.caims.purchaseorder.PurchaseOrder;
-import com.countyassembly.caims.purchaseorder.PurchaseOrderStatus;
+import com.countyassembly.caims.PurchaseOrder.PurchaseOrder;
+import com.countyassembly.caims.PurchaseOrder.PurchaseOrderStatus;
 import com.countyassembly.caims.supplier.SupplierService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

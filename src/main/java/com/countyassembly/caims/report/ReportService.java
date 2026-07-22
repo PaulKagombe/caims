@@ -2,11 +2,11 @@ package com.countyassembly.caims.report;
 
 import com.countyassembly.caims.material.Material;
 import com.countyassembly.caims.material.MaterialService;
-import com.countyassembly.caims.purchaseorder.PurchaseOrder;
-import com.countyassembly.caims.purchaseorder.PurchaseOrderService;
-import com.countyassembly.caims.purchaseorder.PurchaseOrderStatus;
-import com.countyassembly.caims.stockin.StockIn;
-import com.countyassembly.caims.stockin.StockInService;
+import com.countyassembly.caims.PurchaseOrder.PurchaseOrder;
+import com.countyassembly.caims.PurchaseOrder.PurchaseOrderService;
+import com.countyassembly.caims.PurchaseOrder.PurchaseOrderStatus;
+import com.countyassembly.caims.StockIn.StockIn;
+import com.countyassembly.caims.StockIn.StockInService;
 import com.countyassembly.caims.stockout.StockOut;
 import com.countyassembly.caims.stockout.StockOutService;
 import lombok.RequiredArgsConstructor;

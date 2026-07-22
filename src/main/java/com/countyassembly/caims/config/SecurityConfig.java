@@ -110,11 +110,14 @@ public class SecurityConfig {
                         // Restock Requests — Storekeeper flags a need to reorder,
                         // Procurement approves (creating the Purchase Order) or rejects
                         .requestMatchers("/restock-requests/**")
-                        .hasAnyRole("ADMIN", "STOREKEEPER", "PROCUREMENT_OFFICER")
+                                .hasAnyRole("ADMIN", "STOREKEEPER", "PROCUREMENT_OFFICER")
 
                         // Stock In / Stock Out — executed by the storekeeper (or admin)
                         .requestMatchers("/stock-in/**").hasAnyRole("ADMIN", "STOREKEEPER")
                         .requestMatchers("/stock-out/**").hasAnyRole("ADMIN", "STOREKEEPER")
+
+                        // Reports — admin and auditor
+                        .requestMatchers("/reports/**").hasAnyRole("ADMIN", "AUDITOR")
 
                         // Everything else requires authentication
                         .anyRequest().authenticated()
