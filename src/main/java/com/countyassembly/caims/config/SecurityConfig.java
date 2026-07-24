@@ -165,10 +165,10 @@ public class SecurityConfig {
                         .contentSecurityPolicy(csp -> csp
                                 .policyDirectives(
                                         "default-src 'self'; " +
-                                                "style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'; " +  // ✅ ADDED Google Fonts CSS
+                                                "style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'; " +
                                                 "script-src 'self' https://cdn.jsdelivr.net; " +
                                                 "img-src 'self' data:; " +
-                                                "font-src 'self' data: https://cdnjs.cloudflare.com https://use.fontawesome.com https://fonts.gstatic.com; " +  // ✅ ADDED Google Fonts fonts
+                                                "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; " +
                                                 "frame-ancestors 'none'"
                                 )
                         )

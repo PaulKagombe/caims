@@ -1,0 +1,212 @@
+/* ============================================================
+   RESPONSIVE STYLES
+   ============================================================ */
+
+/* ---------- Tablets (768px - 1024px) ---------- */
+@media screen and (max-width: 1024px) {
+
+    /* Sidebar */
+    .sidebar {
+        width: 200px;
+        font-size: 14px;
+    }
+
+    .sidebar .nav-link {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+
+    .sidebar .nav-link i {
+        font-size: 16px;
+        margin-right: 8px;
+    }
+
+    /* Main Content */
+    .main-content {
+        margin-left: 200px;
+        padding: 15px;
+    }
+}
+
+/* ---------- Phones & Small Tablets (480px - 768px) ---------- */
+@media screen and (max-width: 768px) {
+
+    /* Header */
+    .header {
+        padding: 10px 15px;
+    }
+
+    .header .brand h4 {
+        font-size: 18px;
+    }
+
+    .header .user-info {
+        font-size: 13px;
+    }
+
+    /* Sidebar - Collapsed */
+    .sidebar {
+        width: 0;
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 1050;
+        background: #2c3e50;
+        transition: width 0.3s ease;
+        padding-top: 60px;
+    }
+
+    .sidebar.open {
+        width: 280px;
+    }
+
+    .sidebar .nav-link {
+        padding: 12px 20px;
+        font-size: 15px;
+    }
+
+    .sidebar .nav-link i {
+        font-size: 18px;
+        width: 24px;
+        margin-right: 12px;
+    }
+
+    /* Main Content */
+    .main-content {
+        margin-left: 0 !important;
+        padding: 10px;
+    }
+
+    /* Dashboard Cards - 2 columns on tablets, 1 on phones */
+    .dashboard-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .dashboard-card {
+        padding: 15px;
+    }
+
+    .dashboard-card .icon {
+        font-size: 28px;
+    }
+
+    .dashboard-card .number {
+        font-size: 22px;
+    }
+
+    .dashboard-card .label {
+        font-size: 12px;
+    }
+
+    /* Tables - Horizontal Scroll */
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-responsive table {
+        width: 100%;
+        min-width: 600px;
+    }
+
+    /* Forms */
+    .form-control {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    /* Footer */
+    .footer {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .quick-actions .btn {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+}
+
+/* ---------- Small Phones (less than 480px) ---------- */
+@media screen and (max-width: 480px) {
+
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .header .brand h4 {
+        font-size: 16px;
+    }
+
+    .header .user-info {
+        font-size: 12px;
+    }
+
+    .sidebar.open {
+        width: 100%;
+    }
+
+    .modal-content {
+        margin: 10px;
+    }
+
+    /* Table font size */
+    .table-responsive table {
+        font-size: 13px;
+        min-width: 500px;
+    }
+
+    .table-responsive table th,
+    .table-responsive table td {
+        padding: 6px 10px;
+    }
+}
+
+/* ---------- Sidebar Toggle Button ---------- */
+.sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+@media screen and (max-width: 768px) {
+    .sidebar-toggle {
+        display: block;
+    }
+}
+
+/* ---------- Overlay for mobile sidebar ---------- */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
