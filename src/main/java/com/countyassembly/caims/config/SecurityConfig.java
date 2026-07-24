@@ -161,15 +161,14 @@ public class SecurityConfig {
                         .sessionConcurrency(concurrency -> concurrency
                                 .maximumSessions(1)
                         )
-                )
-                .headers(headers -> headers
+                ).headers(headers -> headers
                         .contentSecurityPolicy(csp -> csp
                                 .policyDirectives(
                                         "default-src 'self'; " +
-                                                "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
+                                                "style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'; " +  // ✅ ADDED Google Fonts CSS
                                                 "script-src 'self' https://cdn.jsdelivr.net; " +
                                                 "img-src 'self' data:; " +
-                                                "font-src 'self' data:; " +
+                                                "font-src 'self' data: https://cdnjs.cloudflare.com https://use.fontawesome.com https://fonts.gstatic.com; " +  // ✅ ADDED Google Fonts fonts
                                                 "frame-ancestors 'none'"
                                 )
                         )
@@ -180,7 +179,7 @@ public class SecurityConfig {
                         )
                         .contentTypeOptions(Customizer.withDefaults())
                 )
-                .rememberMe(remember -> remember
+                               .rememberMe(remember -> remember
                         .key("your-super-secret-key-change-this-12345")
                         .rememberMeCookieName("CAIMS-REMEMBER-ME")
                         .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 days
