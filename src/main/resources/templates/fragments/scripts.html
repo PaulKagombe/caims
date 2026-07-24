@@ -7,15 +7,37 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/sidebar.js}"></script>
+    // Sidebar Toggle
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Guarded: #sidebarOffcanvas doesn't exist in the current markup.
-            var sidebarOffcanvasEl = document.getElementById("sidebarOffcanvas");
+    document.addEventListener('DOMContentLoaded', function() {
 
-            if (sidebarOffcanvasEl) {
-                var sidebarOffcanvas = new bootstrap.Offcanvas(sidebarOffcanvasEl);
-            }
-        });
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (toggleBtn && sidebar && overlay) {
+
+    // Open sidebar
+    toggleBtn.addEventListener('click', function() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+    });
+
+    // Close sidebar when overlay is clicked
+    overlay.addEventListener('click', function() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    });
+
+    // Close sidebar when window resizes to desktop
+    window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    }
+    });
+    }
+    });
     </script>
     <script>
 
