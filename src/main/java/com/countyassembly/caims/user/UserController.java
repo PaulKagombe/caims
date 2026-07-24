@@ -14,15 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * ============================================================
- * User Controller
- * ============================================================
- *
- * Lets a System Administrator create, edit, and activate/deactivate
- * other users, assigning them a role. Restricted to ROLE_ADMIN via
- * SecurityConfig ("/users/**" -> hasRole("ADMIN")).
- */
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -35,30 +26,24 @@ public class UserController {
 
     @GetMapping
     public String listUsers(Model model) {
-
         model.addAttribute("users", userService.findAll());
         model.addAttribute("activePage", "users");
-
         return "users/list";
     }
 
     @GetMapping("/new")
     public String showAddForm(Model model) {
-
         model.addAttribute("user", new SystemUser());
         model.addAttribute("roles", roleService.findAll());
         model.addAttribute("isNew", true);
-
         return "users/form";
     }
 
     @GetMapping("/edit/{id}")
     public String editUser(@PathVariable Long id, Model model) {
-
         model.addAttribute("user", userService.findById(id));
         model.addAttribute("roles", roleService.findAll());
         model.addAttribute("isNew", false);
-
         return "users/form";
     }
 
@@ -73,9 +58,7 @@ public class UserController {
 
         boolean isNew = (user.getId() == null);
 
-        // Password is required on create, optional on edit (blank = keep
-        // existing). Bean Validation can't express this on the entity
-        // itself, so it's checked explicitly here before anything else.
+        // Password is required on create, optional on edit (blank = keep existing)
         if (isNew && (password == null || password.isBlank())) {
             result.rejectValue("password", "error.user", "Password is required for a new user.");
         }
@@ -85,37 +68,34 @@ public class UserController {
         }
 
         if (result.hasErrors()) {
-
             log.debug("User form validation errors: {}", result.getAllErrors());
-
             model.addAttribute("roles", roleService.findAll());
             model.addAttribute("isNew", isNew);
-
             return "users/form";
         }
 
         try {
-
             if (isNew) {
-
                 userService.createUser(user, roleId, password);
-
                 redirectAttributes.addFlashAttribute("success", "User created successfully.");
-
             } else {
-
                 userService.updateUser(user.getId(), user, roleId, password);
-
                 redirectAttributes.addFlashAttribute("success", "User updated successfully.");
             }
-
-        } catch (DuplicateResourceException ex) {
-
-            result.rejectValue("username", "error.user", ex.getMessage());
-
+        } catch (IllegalArgumentException ex) {
+            // Catch password policy violations
+            if (ex.getMessage().contains("Password policy violated")) {
+                result.rejectValue("password", "error.user", ex.getMessage());
+            } else {
+                result.rejectValue("password", "error.user", ex.getMessage());
+            }
             model.addAttribute("roles", roleService.findAll());
             model.addAttribute("isNew", isNew);
-
+            return "users/form";
+        } catch (DuplicateResourceException ex) {
+            result.rejectValue("username", "error.user", ex.getMessage());
+            model.addAttribute("roles", roleService.findAll());
+            model.addAttribute("isNew", isNew);
             return "users/form";
         }
 
@@ -129,17 +109,13 @@ public class UserController {
             RedirectAttributes redirectAttributes) {
 
         if (isSelf(id, principal)) {
-
             redirectAttributes.addFlashAttribute(
                     "error", "You cannot deactivate your own account.");
-
             return "redirect:/users";
         }
 
         userService.setActive(id, false);
-
         redirectAttributes.addFlashAttribute("success", "User deactivated.");
-
         return "redirect:/users";
     }
 
@@ -149,14 +125,11 @@ public class UserController {
             RedirectAttributes redirectAttributes) {
 
         userService.setActive(id, true);
-
         redirectAttributes.addFlashAttribute("success", "User activated.");
-
         return "redirect:/users";
     }
 
     private boolean isSelf(Long targetId, CustomUserDetails principal) {
-
         return principal != null
                 && principal.getUser() != null
                 && principal.getUser().getId().equals(targetId);

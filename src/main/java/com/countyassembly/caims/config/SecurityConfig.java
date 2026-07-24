@@ -180,6 +180,13 @@ public class SecurityConfig {
                         )
                         .contentTypeOptions(Customizer.withDefaults())
                 )
+                .rememberMe(remember -> remember
+                        .key("your-super-secret-key-change-this-12345")
+                        .rememberMeCookieName("CAIMS-REMEMBER-ME")
+                        .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 days
+                        .userDetailsService(userDetailsService)
+                )
+
 
                 // Register our database user service
                 .userDetailsService(userDetailsService);
