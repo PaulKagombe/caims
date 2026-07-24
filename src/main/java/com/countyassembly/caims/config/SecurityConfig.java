@@ -75,9 +75,6 @@ public class SecurityConfig {
 
         http
 
-                // Disable CSRF during development
-                .csrf(csrf -> csrf.disable())
-
                 // Configure URL authorization
                 .authorizeHttpRequests(auth -> auth
 
@@ -165,10 +162,29 @@ public class SecurityConfig {
                                 .maximumSessions(1)
                         )
                 )
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives(
+                                        "default-src 'self'; " +
+                                                "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; " +
+                                                "script-src 'self' https://cdn.jsdelivr.net; " +
+                                                "img-src 'self' data:; " +
+                                                "font-src 'self' data:; " +
+                                                "frame-ancestors 'none'"
+                                )
+                        )
+                        .frameOptions(frame -> frame.deny())
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)
+                        )
+                        .contentTypeOptions(Customizer.withDefaults())
+                )
 
                 // Register our database user service
                 .userDetailsService(userDetailsService);
 
         return http.build();
     }
+
 }

@@ -42,12 +42,18 @@
                         <strong>Login Failed!</strong> Invalid username or password.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                    <!-- Blocked Message -->
+                    <div th:if="${param.blocked != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Account Locked!</strong> Too many failed login attempts. Please try again after 15 minutes.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
 
                     <!-- Logout Message -->
                     <div th:if="${param.logout != null}" class="alert alert-success alert-dismissible fade show" role="alert">
                         You have logged out successfully.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+
 
                     <form th:action="@{/login}" method="post" name="loginForm">
 
